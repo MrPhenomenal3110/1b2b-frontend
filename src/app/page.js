@@ -26,33 +26,25 @@ export default function Home() {
       },
       tracking: {
         utm_source: "",
-        utm_medium: "", 
+        utm_medium: "",
         utm_campaign: "",
       },
     },
   });
 
   const platformOptions = {
-    names: [
-      "Facebook",
-      "Google Ads", 
-      "Instagram",
-      "LinkedIn",
-      "TikTok",
-      "Twitter",
-    ],
+    names: ["Meta", "Google", "Instagram", "LinkedIn", "Twitter"],
     placements: {
-      Facebook: ["Feed", "Stories", "Carousel", "Marketplace"],
-      "Google Ads": ["Display Network", "Search", "Video", "Discovery"],
-      Instagram: ["Feed", "Stories", "Reels", "Explore"],
-      LinkedIn: ["Feed", "Message Ads", "Dynamic Ads", "Text Ads"],
-      TikTok: ["In-Feed", "TopView", "Brand Takeover", "Spark Ads"],
-      Twitter: ["Timeline", "Explore", "Profile", "Tweet detail"],
+      Meta: ["Image Feed Ads", "Stories Ads", "Carousel Ads"],
+      Google: ["Display Network Ads", "Search Ads", "Discovery Ads"],
+      Instagram: ["Feed Posts", "Stories and Reels"],
+      LinkedIn: ["Sponsored Content", "Message Ads"],
+      Twitter: ["Image Ads"],
     },
     devices: ["mobile", "desktop", "tablet"],
     objectives: [
       "Awareness",
-      "Consideration", 
+      "Consideration",
       "Conversions",
       "Lead Generation",
       "Sales",
@@ -63,6 +55,26 @@ export default function Home() {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check if file is an accepted type
+      const acceptedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml",
+        "image/bmp",
+        "image/tiff",
+        "application/x-photoshop",
+        "image/vnd.adobe.photoshop",
+        "application/photoshop",
+        "application/psd",
+      ];
+
+      if (!acceptedTypes.includes(file.type)) {
+        alert("Please upload an image file or PSD file");
+        return;
+      }
+
       setSelectedImage(URL.createObjectURL(file));
       setSelectedFile(file);
       setIsAnalyzing(true);
@@ -101,7 +113,10 @@ export default function Home() {
         },
         body: JSON.stringify({
           message: analysisResults,
-          platform: formData.platform,
+          platform: {
+            ...formData.platform,
+            name: formData.platform.name.toUpperCase(),
+          },
           metadata: formData.metadata,
         }),
       });
@@ -128,7 +143,7 @@ export default function Home() {
             <input
               type="file"
               className="hidden"
-              accept="image/*"
+              accept="image/*, application/psd, application/photoshop"
               onChange={handleImageUpload}
             />
           </label>
@@ -153,13 +168,18 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="text-xl font-semibold text-gray-800 animate-pulse">
-                  {analysisResults ? "Processing configuration..." : "Analyzing image..."}
+                  {analysisResults
+                    ? "Processing configuration..."
+                    : "Analyzing image..."}
                 </p>
               </div>
             )}
 
             {analysisResults && !isDone && (
-              <form onSubmit={handleFormSubmit} className="bg-white p-6 rounded-lg border border-gray-200">
+              <form
+                onSubmit={handleFormSubmit}
+                className="bg-white p-6 rounded-lg border border-gray-200"
+              >
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">
                   Configure Your Advertisement
                 </h2>
@@ -213,7 +233,9 @@ export default function Home() {
                         value={formData.platform.placement}
                       >
                         <option value="">Select placement</option>
-                        {platformOptions.placements[formData.platform.name]?.map((placement) => (
+                        {platformOptions.placements[
+                          formData.platform.name
+                        ]?.map((placement) => (
                           <option key={placement} value={placement}>
                             {placement}
                           </option>
@@ -228,15 +250,28 @@ export default function Home() {
                     </label>
                     <div className="flex gap-4">
                       {platformOptions.devices.map((device) => (
-                        <label key={device} className="inline-flex items-center">
+                        <label
+                          key={device}
+                          className="inline-flex items-center"
+                        >
                           <input
                             type="checkbox"
                             className="form-checkbox"
-                            checked={formData.platform.device_targeting.includes(device)}
+                            checked={formData.platform.device_targeting.includes(
+                              device
+                            )}
                             onChange={() => {
-                              const newDevices = formData.platform.device_targeting.includes(device)
-                                ? formData.platform.device_targeting.filter((d) => d !== device)
-                                : [...formData.platform.device_targeting, device];
+                              const newDevices =
+                                formData.platform.device_targeting.includes(
+                                  device
+                                )
+                                  ? formData.platform.device_targeting.filter(
+                                      (d) => d !== device
+                                    )
+                                  : [
+                                      ...formData.platform.device_targeting,
+                                      device,
+                                    ];
                               setFormData((prev) => ({
                                 ...prev,
                                 platform: {
@@ -290,56 +325,301 @@ export default function Home() {
             )}
 
             {isDone && finalResults && (
-              <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
-                <h2 className="text-2xl font-bold text-gray-800">Campaign Analysis</h2>
-                
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-2">Compliance Status</h3>
-                  <div className={`text-lg font-medium ${finalResults.compliance_status === 'COMPLIANT' ? 'text-green-600' : 'text-red-600'}`}>
-                    {finalResults.compliance_status.replace('_', ' ')}
-                  </div>
-                </div>
+              <div className="bg-white p-8 rounded-xl shadow-2xl space-y-8">
+                <h2 className="text-3xl font-bold text-gray-800 border-b pb-4">
+                  Campaign Analysis Results
+                </h2>
 
-                {finalResults.platform_specific_issues.map((issue, index) => (
-                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-lg mb-2">{issue.element}</h3>
-                    <div className="space-y-2">
-                      <p className="text-gray-700">
-                        <span className="font-medium">Current Value:</span> {issue.current_value}
-                      </p>
-                      <p className="text-gray-700">
-                        <span className="font-medium">Requirement:</span> {issue.requirement}
-                      </p>
-                      <p className={`font-medium ${
-                        issue.severity === 'HIGH' ? 'text-red-600' : 
-                        issue.severity === 'MEDIUM' ? 'text-yellow-600' : 'text-blue-600'
-                      }`}>
-                        Severity: {issue.severity}
-                      </p>
-                      <p className="text-gray-700">
-                        <span className="font-medium">Recommendation:</span> {issue.recommendation}
-                      </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="bg-gray-50 p-6 rounded-xl">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                      Image Analysis
+                    </h3>
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="font-medium text-gray-700 mb-2">
+                          Image Specifications
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm text-gray-600">Dimensions</p>
+                            <p className="font-medium">
+                              {analysisResults?.analysis?.image_specs
+                                ?.dimensions?.width || "-"}{" "}
+                              x{" "}
+                              {analysisResults?.analysis?.image_specs
+                                ?.dimensions?.height || "-"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">Format</p>
+                            <p className="font-medium">
+                              {analysisResults?.analysis?.image_specs?.format ||
+                                "-"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              Aspect Ratio
+                            </p>
+                            <p className="font-medium">
+                              {analysisResults?.analysis?.image_specs?.aspect_ratio?.toFixed(
+                                2
+                              ) || "-"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              Size Category
+                            </p>
+                            <p className="font-medium capitalize">
+                              {analysisResults?.analysis?.image_specs
+                                ?.size_category || "-"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium text-gray-700 mb-2">
+                          Color Scheme
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              Dominant Color
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-6 h-6 rounded-full border"
+                                style={{
+                                  backgroundColor:
+                                    analysisResults?.analysis?.content
+                                      ?.color_scheme?.dominant || "#fff",
+                                }}
+                              />
+                              <p className="font-medium">
+                                {analysisResults?.analysis?.content
+                                  ?.color_scheme?.dominant || "-"}
+                              </p>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              Background Color
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-6 h-6 rounded-full border"
+                                style={{
+                                  backgroundColor:
+                                    analysisResults?.analysis?.content
+                                      ?.color_scheme?.background || "#fff",
+                                }}
+                              />
+                              <p className="font-medium">
+                                {analysisResults?.analysis?.content
+                                  ?.color_scheme?.background || "-"}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="col-span-2">
+                            <p className="text-sm text-gray-600">
+                              Accent Colors
+                            </p>
+                            <div className="flex gap-2 mt-1">
+                              {analysisResults?.analysis?.content?.color_scheme?.accent?.map(
+                                (color, index) => (
+                                  <div
+                                    key={index}
+                                    className="w-6 h-6 rounded-full border"
+                                    style={{ backgroundColor: color }}
+                                    title={color}
+                                  />
+                                )
+                              ) || "-"}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium text-gray-700 mb-2">
+                          Composition Metrics
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              Text Coverage
+                            </p>
+                            <p className="font-medium">
+                              {(
+                                analysisResults?.analysis?.content
+                                  ?.composition_metrics?.text_coverage * 100
+                              ).toFixed(1)}
+                              %
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              Visual Coverage
+                            </p>
+                            <p className="font-medium">
+                              {(
+                                analysisResults?.analysis?.content
+                                  ?.composition_metrics?.visual_coverage * 100
+                              ).toFixed(1)}
+                              %
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">White Space</p>
+                            <p className="font-medium">
+                              {(
+                                analysisResults?.analysis?.content
+                                  ?.composition_metrics?.white_space * 100
+                              ).toFixed(1)}
+                              %
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              Balance Score
+                            </p>
+                            <p className="font-medium">
+                              {(
+                                analysisResults?.analysis?.content
+                                  ?.composition_metrics?.balance_score * 10
+                              ).toFixed(1)}
+                              /10
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium text-gray-700 mb-2">
+                          Visual Elements
+                        </h4>
+                        <ul className="space-y-2">
+                          {analysisResults?.analysis?.content?.visual_elements?.background_elements?.map(
+                            (element, i) => (
+                              <li
+                                key={i}
+                                className="flex justify-between items-center"
+                              >
+                                <span>{element.name}</span>
+                                <span className="text-blue-600 font-medium">
+                                  {(element.confidence || 0).toFixed(2)}%
+                                </span>
+                              </li>
+                            )
+                          ) || (
+                            <li className="text-gray-500">
+                              No visual elements detected
+                            </li>
+                          )}
+                        </ul>
+                      </div>
                     </div>
                   </div>
-                ))}
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-2">General Recommendations</h3>
-                  <ul className="list-disc list-inside space-y-2">
-                    {finalResults.general_recommendations.map((recommendation, index) => (
-                      <li key={index} className="text-gray-700">{recommendation}</li>
-                    ))}
-                  </ul>
+                  <div className="space-y-8">
+                    <div className="bg-gray-50 p-6 rounded-xl">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                        Compliance Status
+                      </h3>
+                      <div
+                        className={`text-lg font-medium p-3 rounded-lg ${
+                          finalResults.compliance_status === "COMPLIANT"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {finalResults.compliance_status.replace("_", " ")}
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-6 rounded-xl">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                        Performance Impact
+                      </h3>
+                      <div
+                        className={`text-lg font-medium p-3 rounded-lg ${
+                          finalResults.estimated_performance_impact === "HIGH"
+                            ? "bg-red-100 text-red-800"
+                            : finalResults.estimated_performance_impact ===
+                              "MEDIUM"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-green-100 text-green-800"
+                        }`}
+                      >
+                        {finalResults.estimated_performance_impact}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-2">Performance Impact</h3>
-                  <div className={`text-lg font-medium ${
-                    finalResults.estimated_performance_impact === 'HIGH' ? 'text-red-600' :
-                    finalResults.estimated_performance_impact === 'MEDIUM' ? 'text-yellow-600' : 'text-green-600'
-                  }`}>
-                    {finalResults.estimated_performance_impact}
+                {finalResults.platform_specific_issues.length > 0 && (
+                  <div className="bg-gray-50 p-6 rounded-xl">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                      Platform Issues
+                    </h3>
+                    <div className="grid gap-4">
+                      {finalResults.platform_specific_issues.map(
+                        (issue, index) => (
+                          <div
+                            key={index}
+                            className="border-l-4 border-yellow-400 bg-yellow-50 p-4 rounded-r-lg"
+                          >
+                            <h4 className="font-medium text-gray-800">
+                              {issue.element}
+                            </h4>
+                            <div className="mt-2 space-y-1 text-sm">
+                              <p>
+                                <span className="font-medium">Current:</span>{" "}
+                                {issue.current_value}
+                              </p>
+                              <p>
+                                <span className="font-medium">Required:</span>{" "}
+                                {issue.requirement}
+                              </p>
+                              <p
+                                className={`font-medium ${
+                                  issue.severity === "HIGH"
+                                    ? "text-red-600"
+                                    : issue.severity === "MEDIUM"
+                                    ? "text-yellow-600"
+                                    : "text-blue-600"
+                                }`}
+                              >
+                                Severity: {issue.severity}
+                              </p>
+                              <p className="text-gray-600 mt-2">
+                                {issue.recommendation}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
                   </div>
+                )}
+
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                    Recommendations
+                  </h3>
+                  <ul className="space-y-3">
+                    {finalResults.general_recommendations.map(
+                      (recommendation, index) => (
+                        <li key={index} className="flex gap-3 text-gray-700">
+                          <span className="text-blue-500">•</span>
+                          {recommendation}
+                        </li>
+                      )
+                    )}
+                  </ul>
                 </div>
               </div>
             )}
