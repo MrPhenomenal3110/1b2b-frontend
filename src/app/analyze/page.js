@@ -2,8 +2,7 @@
 
 import { ImageIcon, InfoIcon } from "lucide-react";
 import Image from "next/image";
-import { useState, useCallback } from "react";
-import ReactCanvasConfetti from "react-canvas-confetti";
+import { useState } from "react";
 
 const BASE_URL_1 = "https://oneb2b-backend.onrender.com/analyse";
 const BASE_URL_2 = "https://1b2b.deno.dev";
@@ -61,20 +60,23 @@ const UploadPage = () => {
   const handleImageUpload = async (file) => {
     if (file) {
       const acceptedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-        "image/svg+xml",
-        "image/bmp",
-        "image/tiff",
+        "image/*",
         "application/x-photoshop",
-        "image/vnd.adobe.photoshop",
+        "image/vnd.adobe.photoshop", 
         "application/photoshop",
         "application/psd",
+        "image/psd"
       ];
 
-      if (!acceptedTypes.includes(file.type)) {
+      // Check if it's an image file
+      if (file.type.startsWith('image/')) {
+        // Valid image file
+      }
+      // Check if it's a PSD file by extension since MIME type can be inconsistent
+      else if (file.name.toLowerCase().endsWith('.psd')) {
+        // Valid PSD file
+      }
+      else {
         alert("Please upload an image file or PSD file");
         return;
       }
@@ -94,7 +96,6 @@ const UploadPage = () => {
           method: "POST",
           body: formData,
         });
-
         const data = await response.json();
         setAnalysisResults(data[0].results[0]);
         setIsAnalyzing(false);
