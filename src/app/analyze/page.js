@@ -62,21 +62,20 @@ const UploadPage = () => {
       const acceptedTypes = [
         "image/*",
         "application/x-photoshop",
-        "image/vnd.adobe.photoshop", 
+        "image/vnd.adobe.photoshop",
         "application/photoshop",
         "application/psd",
-        "image/psd"
+        "image/psd",
       ];
 
       // Check if it's an image file
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith("image/")) {
         // Valid image file
       }
       // Check if it's a PSD file by extension since MIME type can be inconsistent
-      else if (file.name.toLowerCase().endsWith('.psd')) {
+      else if (file.name.toLowerCase().endsWith(".psd")) {
         // Valid PSD file
-      }
-      else {
+      } else {
         alert("Please upload an image file or PSD file");
         return;
       }
@@ -697,7 +696,13 @@ const UploadPage = () => {
                           (issue, index) => (
                             <div
                               key={index}
-                              className="border-l-4 border-yellow-400 bg-yellow-50 p-4 rounded-r-lg"
+                              className={`border-l-4 p-4 rounded-r-lg ${
+                                issue.severity === "HIGH"
+                                  ? "border-red-400 bg-red-50"
+                                  : issue.severity === "MEDIUM"
+                                  ? "border-yellow-400 bg-yellow-50" 
+                                  : "border-green-400 bg-green-50"
+                              }`}
                             >
                               <h4 className="font-medium text-gray-800">
                                 {issue.element}
@@ -707,6 +712,25 @@ const UploadPage = () => {
                                   <span className="font-medium">Current:</span>{" "}
                                   {issue.current_value}
                                 </p>
+                                {issue.replacement_suggestions && (
+                                  <div className="mt-2">
+                                    <span className="font-medium block mb-1">
+                                      Replacement Suggestions:
+                                    </span>
+                                    <div className="flex flex-wrap gap-2">
+                                      {issue.replacement_suggestions.map(
+                                        (suggestion) => (
+                                          <span
+                                            key={suggestion}
+                                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                          >
+                                            {suggestion}
+                                          </span>
+                                        )
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
                                 <p>
                                   <span className="font-medium">Required:</span>{" "}
                                   {issue.requirement}
@@ -717,7 +741,7 @@ const UploadPage = () => {
                                       ? "text-red-600"
                                       : issue.severity === "MEDIUM"
                                       ? "text-yellow-600"
-                                      : "text-blue-600"
+                                      : "text-green-600"
                                   }`}
                                 >
                                   Severity: {issue.severity}
