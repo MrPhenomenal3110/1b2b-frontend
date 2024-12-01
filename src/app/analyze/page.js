@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useCallback } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 
-const BASE_URL_1 = "http://3.109.121.120:8000/analyse";
+const BASE_URL_1 = "https://oneb2b-backend.onrender.com/analyse";
 const BASE_URL_2 = "https://1b2b.deno.dev";
 
 const UploadPage = () => {
@@ -740,7 +740,10 @@ const UploadPage = () => {
                       <ul className="space-y-3">
                         {finalResults.general_recommendations.map(
                           (recommendation, index) => (
-                            <li key={index} className="flex gap-3 text-gray-700">
+                            <li
+                              key={index}
+                              className="flex gap-3 text-gray-700"
+                            >
                               <span className="text-blue-500">•</span>
                               {recommendation}
                             </li>
@@ -758,56 +761,84 @@ const UploadPage = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {finalResults.detailed_analysis.strengths && (
                           <div>
-                            <h4 className="font-medium text-green-700 mb-2">Strengths</h4>
+                            <h4 className="font-medium text-green-700 mb-2">
+                              Strengths
+                            </h4>
                             <ul className="space-y-2">
-                              {finalResults.detailed_analysis.strengths.map((strength, index) => (
-                                <li key={index} className="flex gap-2 text-gray-700">
-                                  <span className="text-green-500">✓</span>
-                                  {strength}
-                                </li>
-                              ))}
+                              {finalResults.detailed_analysis.strengths.map(
+                                (strength, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex gap-2 text-gray-700"
+                                  >
+                                    <span className="text-green-500">✓</span>
+                                    {strength}
+                                  </li>
+                                )
+                              )}
                             </ul>
                           </div>
                         )}
 
                         {finalResults.detailed_analysis.weaknesses && (
                           <div>
-                            <h4 className="font-medium text-red-700 mb-2">Weaknesses</h4>
+                            <h4 className="font-medium text-red-700 mb-2">
+                              Weaknesses
+                            </h4>
                             <ul className="space-y-2">
-                              {finalResults.detailed_analysis.weaknesses.map((weakness, index) => (
-                                <li key={index} className="flex gap-2 text-gray-700">
-                                  <span className="text-red-500">⚠</span>
-                                  {weakness}
-                                </li>
-                              ))}
+                              {finalResults.detailed_analysis.weaknesses.map(
+                                (weakness, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex gap-2 text-gray-700"
+                                  >
+                                    <span className="text-red-500">⚠</span>
+                                    {weakness}
+                                  </li>
+                                )
+                              )}
                             </ul>
                           </div>
                         )}
 
                         {finalResults.detailed_analysis.opportunities && (
                           <div>
-                            <h4 className="font-medium text-blue-700 mb-2">Opportunities</h4>
+                            <h4 className="font-medium text-blue-700 mb-2">
+                              Opportunities
+                            </h4>
                             <ul className="space-y-2">
-                              {finalResults.detailed_analysis.opportunities.map((opportunity, index) => (
-                                <li key={index} className="flex gap-2 text-gray-700">
-                                  <span className="text-blue-500">↗</span>
-                                  {opportunity}
-                                </li>
-                              ))}
+                              {finalResults.detailed_analysis.opportunities.map(
+                                (opportunity, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex gap-2 text-gray-700"
+                                  >
+                                    <span className="text-blue-500">↗</span>
+                                    {opportunity}
+                                  </li>
+                                )
+                              )}
                             </ul>
                           </div>
                         )}
 
                         {finalResults.detailed_analysis.risks && (
                           <div>
-                            <h4 className="font-medium text-yellow-700 mb-2">Risks</h4>
+                            <h4 className="font-medium text-yellow-700 mb-2">
+                              Risks
+                            </h4>
                             <ul className="space-y-2">
-                              {finalResults.detailed_analysis.risks.map((risk, index) => (
-                                <li key={index} className="flex gap-2 text-gray-700">
-                                  <span className="text-yellow-500">!</span>
-                                  {risk}
-                                </li>
-                              ))}
+                              {finalResults.detailed_analysis.risks.map(
+                                (risk, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex gap-2 text-gray-700"
+                                  >
+                                    <span className="text-yellow-500">!</span>
+                                    {risk}
+                                  </li>
+                                )
+                              )}
                             </ul>
                           </div>
                         )}
@@ -822,45 +853,62 @@ const UploadPage = () => {
                         <div className="relative group">
                           <InfoIcon className="h-4 w-4 text-gray-400 cursor-help" />
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2 bg-gray-900 text-white text-sm rounded shadow-lg">
-                            Our prediction of whether your ad will be approved based on platform guidelines and requirements.
+                            Our prediction of whether your ad will be approved
+                            based on platform guidelines and requirements.
                           </div>
                         </div>
                       </h3>
-                      
-                      <div className={`text-lg font-medium p-3 rounded-lg mb-4 ${
-                        finalResults.approval_prediction.likely_to_be_approved 
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}>
-                        {finalResults.approval_prediction.likely_to_be_approved 
+
+                      <div
+                        className={`text-lg font-medium p-3 rounded-lg mb-4 ${
+                          finalResults.approval_prediction.likely_to_be_approved
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {finalResults.approval_prediction.likely_to_be_approved
                           ? "Likely to be approved"
                           : "May need revisions before approval"}
                       </div>
 
                       {finalResults.approval_prediction.potential_blockers && (
                         <div className="mb-4">
-                          <h4 className="font-medium text-red-700 mb-2">Potential Blockers</h4>
+                          <h4 className="font-medium text-red-700 mb-2">
+                            Potential Blockers
+                          </h4>
                           <ul className="space-y-2">
-                            {finalResults.approval_prediction.potential_blockers.map((blocker, index) => (
-                              <li key={index} className="flex gap-2 text-gray-700">
-                                <span className="text-red-500">×</span>
-                                {blocker}
-                              </li>
-                            ))}
+                            {finalResults.approval_prediction.potential_blockers.map(
+                              (blocker, index) => (
+                                <li
+                                  key={index}
+                                  className="flex gap-2 text-gray-700"
+                                >
+                                  <span className="text-red-500">×</span>
+                                  {blocker}
+                                </li>
+                              )
+                            )}
                           </ul>
                         </div>
                       )}
 
                       {finalResults.approval_prediction.suggested_fixes && (
                         <div>
-                          <h4 className="font-medium text-blue-700 mb-2">Suggested Fixes</h4>
+                          <h4 className="font-medium text-blue-700 mb-2">
+                            Suggested Fixes
+                          </h4>
                           <ul className="space-y-2">
-                            {finalResults.approval_prediction.suggested_fixes.map((fix, index) => (
-                              <li key={index} className="flex gap-2 text-gray-700">
-                                <span className="text-blue-500">→</span>
-                                {fix}
-                              </li>
-                            ))}
+                            {finalResults.approval_prediction.suggested_fixes.map(
+                              (fix, index) => (
+                                <li
+                                  key={index}
+                                  className="flex gap-2 text-gray-700"
+                                >
+                                  <span className="text-blue-500">→</span>
+                                  {fix}
+                                </li>
+                              )
+                            )}
                           </ul>
                         </div>
                       )}
