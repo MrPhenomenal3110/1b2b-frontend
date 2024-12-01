@@ -1,0 +1,6 @@
+[submodule "1b2b-backend"]
+	path = 1b2b-backend
+	url = git@github.com:2k4sm/1b2b-backend.git
+[submodule "1b2b-deno"]
+	path = 1b2b-deno
+	url = git@github.com:MrPhenomenal3110/1b2b-deno.git
